@@ -181,10 +181,41 @@ class MP3JuiceMusicClient(BaseMusicClient):
             for item in resp2json(resp)["sc"]: item['root_source'] = 'SoundCloud'; search_results_sc.append(item)
             search_results = [x for ab in zip_longest(search_results_yt, search_results_sc) for x in ab if x is not None]
             for search_result in search_results:
+                # --judgement for search_size
+                if self.strict_limit_search_size_per_page and len(song_infos) >= self.search_size_per_page: break
                 # --download results
                 if not isinstance(search_result, dict) or ('id' not in search_result):
                     continue
-                song_info, download_result = SongInfo(source=self.source, root_source=item['root_source']), dict()
+                song_info, download_result = SongInfo(source=self.source, root_source=search_result['root_source']), dict()
+                # ----song name and lyric
+                lyric_result, lyric = dict(), 'NULL'
+                singers_song_name = search_result.get('title', 'NULL-NULL').split('-')
+                if len(singers_song_name) == 1:
+                    singers, song_name = 'NULL', singers_song_name[0].strip()
+                elif len(singers_song_name) > 1:
+                    singers, song_name = singers_song_name[0].strip(), singers_song_name[1].strip()
+                song_info.raw_data['lyric'] = lyric_result
+                song_info.update(dict(
+                    lyric=lyric, duration='-:-:-', song_name=legalizestring(song_name, replace_null_string='NULL'), singers=legalizestring(singers, replace_null_string='NULL'), 
+                    album='NULL', identifier=search_result['id'],
+                ))
+                # ----if in sound cloud, can be directly accessed
+                if search_result['root_source'] in ['SoundCloud']:
+                    try:
+                        download_url = f"https://eooc.cc/s/{search_result['id_base64']}/{search_result['title_base64']}/"
+                        download_url_status = self.audio_link_tester.test(download_url, request_overrides)
+                        download_url_status['probe_status'] = self.audio_link_tester.probe(download_url, request_overrides)
+                        ext = download_url_status['probe_status']['ext']
+                        if ext == 'NULL': ext = 'mp3'
+                        song_info.update(dict(
+                            download_url=download_url, download_url_status=download_url_status, raw_data={'search': search_result, 'download': {}},
+                            ext=ext, file_size=download_url_status['probe_status']['file_size'],
+                        ))
+                        if not song_info.with_valid_download_url: continue
+                        song_info.downloaded_contents = self.get(download_url, **request_overrides).content
+                        song_infos.append(song_info)
+                    except:
+                        continue
                 # ----init
                 params = {init_param_name: auth_code, 't': str(int(time.time()))}
                 try:
@@ -221,27 +252,13 @@ class MP3JuiceMusicClient(BaseMusicClient):
                 if ext == 'NULL': download_url.split('.')[-1].split('?')[0] or 'mp3'
                 song_info.update(dict(
                     download_url=download_url, download_url_status=download_url_status, raw_data={'search': search_result, 'download': download_result},
-                    use_quark_default_download_headers=False, ext=ext, file_size=download_url_status['probe_status']['file_size']
+                    ext=ext, file_size=download_url_status['probe_status']['file_size']
                 ))
                 if not song_info.with_valid_download_url: continue
                 # ----download should be directly conducted otherwise will have 404 errors
                 song_info.downloaded_contents = self.get(download_url, **request_overrides).content
-                # ----parse more infos
-                lyric_result, lyric = dict(), 'NULL'
-                singers_song_name = search_result.get('title', 'NULL-NULL').split('-')
-                if len(singers_song_name) == 1:
-                    singers, song_name = 'NULL', singers_song_name[0].strip()
-                elif len(singers_song_name) > 1:
-                    singers, song_name = singers_song_name[0].strip(), singers_song_name[1].strip()
-                song_info.raw_data['lyric'] = lyric_result
-                song_info.update(dict(
-                    lyric=lyric, duration='-:-:-', song_name=legalizestring(song_name, replace_null_string='NULL'), singers=legalizestring(singers, replace_null_string='NULL'), 
-                    album='NULL', identifier=search_result['id'],
-                ))
                 # --append to song_infos
                 song_infos.append(song_info)
-                # --judgement for search_size
-                if self.strict_limit_search_size_per_page and len(song_infos) >= self.search_size_per_page: break
             # --update progress
             progress.advance(progress_id, 1)
             progress.update(progress_id, description=f"{self.source}.search >>> {search_url} (Success)")
