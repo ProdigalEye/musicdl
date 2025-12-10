@@ -18,7 +18,7 @@ from itertools import zip_longest
 from urllib.parse import urlencode
 from rich.progress import Progress
 from typing import List, Dict, Any, Optional
-from ..utils import legalizestring, usesearchheaderscookies, usedownloadheaderscookies, touchdir, resp2json, SongInfo, SongInfoUtils
+from ..utils import legalizestring, usesearchheaderscookies, usedownloadheaderscookies, touchdir, resp2json, byte2mb, SongInfo, SongInfoUtils
 
 
 '''MP3JuiceMusicClient'''
@@ -204,15 +204,13 @@ class MP3JuiceMusicClient(BaseMusicClient):
                     try:
                         download_url = f"https://eooc.cc/s/{search_result['id_base64']}/{search_result['title_base64']}/"
                         download_url_status = self.audio_link_tester.test(download_url, request_overrides)
-                        download_url_status['probe_status'] = self.audio_link_tester.probe(download_url, request_overrides)
-                        ext = download_url_status['probe_status']['ext']
-                        if ext == 'NULL': ext = 'mp3'
                         song_info.update(dict(
-                            download_url=download_url, download_url_status=download_url_status, raw_data={'search': search_result, 'download': {}},
-                            ext=ext, file_size=download_url_status['probe_status']['file_size'],
+                            download_url=download_url, download_url_status=download_url_status, raw_data={'search': search_result, 'download': {}}, ext='mp3', 
                         ))
                         if not song_info.with_valid_download_url: continue
                         song_info.downloaded_contents = self.get(download_url, **request_overrides).content
+                        song_info.file_size_bytes = song_info.downloaded_contents.__sizeof__()
+                        song_info.file_size = byte2mb(song_info.file_size_bytes)
                         song_infos.append(song_info)
                     except:
                         continue
@@ -245,18 +243,16 @@ class MP3JuiceMusicClient(BaseMusicClient):
                     if not download_url: continue
                 except:
                     continue
-                # ----test and probe
+                # ----test
                 download_url_status = self.audio_link_tester.test(download_url, request_overrides)
-                download_url_status['probe_status'] = self.audio_link_tester.probe(download_url, request_overrides)
-                ext = download_url_status['probe_status']['ext']
-                if ext == 'NULL': download_url.split('.')[-1].split('?')[0] or 'mp3'
                 song_info.update(dict(
-                    download_url=download_url, download_url_status=download_url_status, raw_data={'search': search_result, 'download': download_result},
-                    ext=ext, file_size=download_url_status['probe_status']['file_size']
+                    download_url=download_url, download_url_status=download_url_status, raw_data={'search': search_result, 'download': download_result}, ext='mp3',
                 ))
                 if not song_info.with_valid_download_url: continue
                 # ----download should be directly conducted otherwise will have 404 errors
                 song_info.downloaded_contents = self.get(download_url, **request_overrides).content
+                song_info.file_size_bytes = song_info.downloaded_contents.__sizeof__()
+                song_info.file_size = byte2mb(song_info.file_size_bytes)
                 # --append to song_infos
                 song_infos.append(song_info)
             # --update progress
