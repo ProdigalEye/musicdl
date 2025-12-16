@@ -125,7 +125,12 @@ class XimalayaMusicClient(BaseMusicClient):
                     song_info = SongInfo(source=self.source)
                     params = {'msg': keyword, 'n': search_result['n'], 'num': self.search_size_per_source, 'type': 'json'}
                     try:
-                        resp = self.get('https://api-v1.cenguigui.cn/api/music/dg_ximalayamusic.php', params=params, **request_overrides)
+                        try:
+                            resp = self.get('https://api-v1.cenguigui.cn/api/music/dg_ximalayamusic.php', params=params, timeout=10, **request_overrides)
+                            resp.raise_for_status()
+                        except:
+                            resp = self.get('https://api.cenguigui.cn/api/music/dg_ximalayamusic.php', params=params, timeout=10, **request_overrides)
+                            resp.raise_for_status()
                         download_result = resp2json(resp)
                         download_url = download_result.get('url', '')
                         if not download_url: continue
