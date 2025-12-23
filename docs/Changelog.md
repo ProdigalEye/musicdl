@@ -1,5 +1,7 @@
 # Release Log
 
+- 2025-12-24: Released musicdl v2.7.6 — add support for MissEvan FM, and fix bugs on the Geqihai site.
+
 - 2025-12-24: Released musicdl v2.7.5 — add support for lossless music search and parsing for the gequhai site, and optimize parts of the code.
 
 - 2025-12-19: Released musicdl v2.7.4 — supports music search and download using TuneHubMusicClient.
