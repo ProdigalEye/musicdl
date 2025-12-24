@@ -31,7 +31,7 @@ musicdl -m GDStudioMusicClient,JamendoMusicClient
 
 In addition, searching and downloading from many music sources simultaneously can be relatively slow. 
 Each run may take about 5–6 minutes. 
-If you are confident that your song can be found on a specific platform or a few platforms, for example, `NeteaseMusicClient`, `QQMusicClient or `KuwoMusicClient`,
+If you are confident that your song can be found on a specific platform or a few platforms, for example, `NeteaseMusicClient`, `QQMusicClient` or `KuwoMusicClient`,
 it is recommended to directly specify those platforms:
 
 ```bash
