@@ -74,85 +74,20 @@ class XimalayaMusicClient(BaseMusicClient):
                 count += page_size
         # if without cookies, use third part apis
         else:
-            use_gdstudio = self._validategdstudio(request_overrides=request_overrides)
-            if use_gdstudio:
-                # --search rules
-                default_rule = {'types': 'search', 'source': 'ximalaya', 'name': keyword, 'count': self.search_size_per_page, 'pages': '1'}
-                default_rule.update(rule)
-                # --construct search urls based on search rules
-                base_url = 'https://music-api.gdstudio.xyz/api.php?'
-                search_urls, page_size, count = [], self.search_size_per_page, 0
-                while self.search_size_per_source > count:
-                    page_rule = copy.deepcopy(default_rule)
-                    page_rule['count'] = page_size
-                    page_rule['pages'] = int(count // page_size) + 1
-                    search_urls.append(base_url + urlencode(page_rule))
-                    count += page_size
-            else:
-                # --search rules
-                default_rule = {'msg': keyword, 'n': '', 'num': self.search_size_per_source, 'type': 'json'}
-                default_rule.update(rule)
-                # --construct search urls based on search rules
-                for base_url in ['https://api-v2.cenguigui.cn/api/music/dg_ximalayamusic.php?', 'https://api-v1.cenguigui.cn/api/music/dg_ximalayamusic.php?', 
-                                 'https://api.cenguigui.cn/api/music/dg_ximalayamusic.php?', 'https://player.cenguigui.cn/api/music/dg_ximalayamusic.php?']:
-                    page_rule = copy.deepcopy(default_rule)
-                    page_rule['num'] = self.search_size_per_source
-                    search_urls = [base_url + urlencode(page_rule)]
-                    self.search_size_per_page = self.search_size_per_source
-                    try:
-                        resp = self.get(search_urls[0], timeout=10, **request_overrides)
-                        resp.raise_for_status()
-                        result = resp2json(resp=resp)
-                        assert isinstance(result, dict) and (len(result['data']) > 0)
-                        break
-                    except:
-                        continue
+            # --search rules
+            default_rule = {'types': 'search', 'source': 'ximalaya', 'name': keyword, 'count': self.search_size_per_page, 'pages': '1'}
+            default_rule.update(rule)
+            # --construct search urls based on search rules
+            base_url = 'https://music-api.gdstudio.xyz/api.php?'
+            search_urls, page_size, count = [], self.search_size_per_page, 0
+            while self.search_size_per_source > count:
+                page_rule = copy.deepcopy(default_rule)
+                page_rule['count'] = page_size
+                page_rule['pages'] = int(count // page_size) + 1
+                search_urls.append(base_url + urlencode(page_rule))
+                count += page_size
         # return
         return search_urls
-    '''_parsecggapi'''
-    def _parsecggapi(self, keyword, search_results, song_infos: list = [], request_overrides: dict = None):
-        # init
-        request_overrides = request_overrides or {}
-        # parse
-        for search_result in search_results['data']:
-            # --download results
-            if (not isinstance(search_result, dict)) or ('trackId' not in search_result) or ('n' not in search_result):
-                continue
-            song_info = SongInfo(source=self.source)
-            params = {'msg': keyword, 'n': search_result['n'], 'num': self.search_size_per_source, 'type': 'json'}
-            try:
-                for prefix in ['api-v2', 'api-v1', 'api', 'player']:
-                    try:
-                        resp = self.get(f'https://{prefix}.cenguigui.cn/api/music/dg_ximalayamusic.php', params=params, timeout=10, **request_overrides)
-                        resp.raise_for_status()
-                        break
-                    except:
-                        continue
-                download_result = resp2json(resp)
-                download_url: str = download_result.get('url', '')
-                if not download_url: continue
-                ext = download_url.split('.')[-1].split('?')[0]
-                song_info = SongInfo(
-                    source=self.source, download_url=download_url, download_url_status=self.audio_link_tester.test(download_url, request_overrides),
-                    raw_data={'search': search_result, 'download': {}, 'lyric': {}}, lyric='NULL', duration='-:-:-', file_size='NULL', ext=ext,
-                    song_name=legalizestring(search_result.get('title', 'NULL'), replace_null_string='NULL'), 
-                    singers=legalizestring(search_result.get('nickname', 'NULL'), replace_null_string='NULL'), 
-                    album=legalizestring(search_result.get('categoryName', 'NULL'), replace_null_string='NULL'),
-                    identifier=search_result['trackId'],
-                )
-            except:
-                continue
-            if not song_info.with_valid_download_url: continue
-            song_info.download_url_status['probe_status'] = self.audio_link_tester.probe(song_info.download_url, request_overrides)
-            ext, file_size = song_info.download_url_status['probe_status']['ext'], song_info.download_url_status['probe_status']['file_size']
-            if file_size and file_size != 'NULL': song_info.file_size = file_size
-            if ext and ext != 'NULL': song_info.ext = ext
-            # --append to song_infos
-            song_infos.append(song_info)
-            # --judgement for search_size
-            if self.strict_limit_search_size_per_page and len(song_infos) >= self.search_size_per_page: break
-        # return
-        return song_infos
     '''_parsegdstudioapi'''
     def _parsegdstudioapi(self, search_results, song_infos: list = [], request_overrides: dict = None):
         # init
@@ -245,8 +180,6 @@ class XimalayaMusicClient(BaseMusicClient):
             parsed_search_url = urlparse(search_url)
             if parsed_search_url.hostname in ['music-api.gdstudio.xyz']:
                 self._parsegdstudioapi(search_results, song_infos=song_infos, request_overrides=request_overrides)
-            elif parsed_search_url.hostname in ['api-v2.cenguigui.cn', 'api-v1.cenguigui.cn', 'api.cenguigui.cn', 'player.cenguigui.cn']:
-                self._parsecggapi(keyword, search_results, song_infos=song_infos, request_overrides=request_overrides)
             else:
                 self._parseofficialapi(search_results, song_infos=song_infos, request_overrides=request_overrides)
             # --update progress
