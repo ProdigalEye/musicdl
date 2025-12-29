@@ -8,13 +8,13 @@ A unified interface encapsulated for all supported music platforms. Arguments su
 - **music_sources** (`list[str]`, optional):  A list of music client names to be enabled. 
   Each name must be a key registered in `MusicClientBuilder.REGISTERED_MODULES`.  
   If left empty, the following default sources are used:  
-  `['MiguMusicClient', 'NeteaseMusicClient', 'QQMusicClient', 'KuwoMusicClient']`.
+  `['MiguMusicClient', 'NeteaseMusicClient', 'QQMusicClient', 'KugouMusicClient', 'KuwoMusicClient', 'QianqianMusicClient']`.
 
 - **init_music_clients_cfg** (`dict[str, dict]`, optional): Per-client initialization configuration.  
   The outer dict is keyed by music source name (*e.g.*, `"NeteaseMusicClient"`), and each value is a dict that overrides the default config:
   ```python
   {
-      "search_size_per_source": 3,
+      "search_size_per_source": 5,
       "auto_set_proxies": False,
       "random_update_ua": False,
       "max_retries": 3,
@@ -133,7 +133,7 @@ End users usually **do not** instantiate `BaseMusicClient` directly, but instead
 The methods documented here describe the common behavior of all these clients.
 Arguments supported when initializing this class include:
 
-- **search_size_per_source** (`int`, default `3`):  
+- **search_size_per_source** (`int`, default `5`):  
   Maximum number of search results to fetch per source.
   
 - **auto_set_proxies** (`bool`, default `False`):  
