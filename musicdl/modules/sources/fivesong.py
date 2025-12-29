@@ -116,6 +116,7 @@ class FiveSongMusicClient(BaseMusicClient):
                         duration = searchdictbykey(download_result['quark_parse_result'], 'duration')
                         duration = [int(float(d)) for d in duration if int(float(d)) > 0]
                         if duration: duration = duration[0]
+                        else: duration = 0
                         if not download_url: continue
                         download_url_status = self.quark_audio_link_tester.test(download_url, request_overrides)
                         download_url_status['probe_status'] = self.quark_audio_link_tester.probe(download_url, request_overrides)

@@ -11,7 +11,7 @@ import copy
 from .base import BaseMusicClient
 from urllib.parse import urlencode
 from rich.progress import Progress
-from ..utils import legalizestring, usesearchheaderscookies, resp2json, safeextractfromdict, SongInfo, QuarkParser
+from ..utils import legalizestring, usesearchheaderscookies, resp2json, safeextractfromdict, searchdictbykey, seconds2hms, SongInfo, QuarkParser
 
 
 '''BuguyyMusicClient'''
@@ -76,17 +76,22 @@ class BuguyyMusicClient(BaseMusicClient):
                     for quark_download_url in quark_download_urls:
                         song_info = SongInfo(source=self.source)
                         try:
-                            m = re.search(r"WAV#(https?://[^#]+)", quark_download_url)
-                            quark_wav_download_url = m.group(1)
+                            m = re.search(r"(?i)(?:WAV|FLAC)#(https?://[^#]+)|MP3#(https?://[^#]+)", quark_download_url)
+                            quark_wav_download_url = m.group(1) or m.group(2)
                             download_result, download_url = QuarkParser.parsefromurl(quark_wav_download_url, **self.quark_parser_config)
+                            duration = searchdictbykey(download_result, 'duration')
+                            duration = [int(float(d)) for d in duration if int(float(d)) > 0]
+                            if duration: duration = duration[0]
+                            else: duration = 0
                             if not download_url: continue
                             download_url_status = self.quark_audio_link_tester.test(download_url, request_overrides)
                             download_url_status['probe_status'] = self.quark_audio_link_tester.probe(download_url, request_overrides)
                             ext = download_url_status['probe_status']['ext']
-                            if ext == 'NULL': ext = 'wav'
+                            if ext == 'NULL': ext = 'mp3'
                             song_info.update(dict(
                                 download_url=download_url, download_url_status=download_url_status, raw_data={'search': search_result, 'download': download_result},
-                                default_download_headers=self.quark_default_download_headers, ext=ext, file_size=download_url_status['probe_status']['file_size']
+                                default_download_headers=self.quark_default_download_headers, ext=ext, file_size=download_url_status['probe_status']['file_size'],
+                                duration_s=duration, duration=seconds2hms(duration),
                             ))
                             if song_info.with_valid_download_url: break
                         except:
@@ -121,11 +126,14 @@ class BuguyyMusicClient(BaseMusicClient):
                         pass
                 if not song_info.with_valid_download_url: continue
                 # ----parse more infos
-                try:
-                    duration = '{:02d}:{:02d}:{:02d}'.format(*([0,0,0] + list(map(int, re.findall(r'\d+', safeextractfromdict(lyric_result, ['data', 'duration'], '')))))[-3:])
-                    if duration == '00:00:00': duration = '-:-:-'
-                except:
-                    duration = '-:-:-'
+                if not song_info.duration or song_info.duration == '-:-:-':
+                    try:
+                        duration = '{:02d}:{:02d}:{:02d}'.format(*([0,0,0] + list(map(int, re.findall(r'\d+', safeextractfromdict(lyric_result, ['data', 'duration'], '')))))[-3:])
+                        if duration == '00:00:00': duration = '-:-:-'
+                    except:
+                        duration = '-:-:-'
+                else:
+                    duration = song_info.duration
                 lyric = safeextractfromdict(lyric_result, ['data', 'lrc'], '')
                 if not lyric or '歌词获取失败' in lyric: lyric = 'NULL'
                 song_info.raw_data['lyric'] = lyric_result
