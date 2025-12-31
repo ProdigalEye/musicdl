@@ -76,7 +76,7 @@ class MissEvanMusicClient(BaseMusicClient):
                     song_info = SongInfo(
                         source=self.source, download_url=download_url, download_url_status=self.audio_link_tester.test(download_url, request_overrides),
                         file_size='NULL', duration_s=duration_s, duration=seconds2hms(duration_s), raw_data={'search': search_result, 'download': download_result, 'lyric': {}},
-                        ext=download_url.split('.')[-1].split('?')[0], identifier=search_result['id'], lyric='NULL', album='NULL',
+                        ext=download_url.split('?')[0].split('.')[-1], identifier=search_result['id'], lyric='NULL', album='NULL',
                         song_name=legalizestring(safeextractfromdict(download_result, ['info', 'sound', 'soundstr'], ''), replace_null_string='NULL'),
                         singers=legalizestring(safeextractfromdict(download_result, ['info', 'sound', 'username'], ''), replace_null_string='NULL'),
                     )

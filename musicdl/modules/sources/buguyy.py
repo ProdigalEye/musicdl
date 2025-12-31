@@ -109,7 +109,7 @@ class BuguyyMusicClient(BaseMusicClient):
                         download_url_status = self.audio_link_tester.test(download_url, request_overrides)
                         download_url_status['probe_status'] = self.audio_link_tester.probe(download_url, request_overrides)
                         ext = download_url_status['probe_status']['ext']
-                        if ext == 'NULL': download_url.split('.')[-1].split('?')[0] or 'mp3'
+                        if ext == 'NULL': download_url.split('?')[0].split('.')[-1] or 'mp3'
                         song_info.update(dict(
                             download_url=download_url, download_url_status=download_url_status, raw_data={'search': search_result, 'download': download_result},
                             ext=ext, file_size=download_url_status['probe_status']['file_size']

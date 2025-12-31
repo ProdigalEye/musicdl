@@ -104,7 +104,7 @@ class XimalayaMusicClient(BaseMusicClient):
                 song_info = SongInfo(
                     source=self.source, download_url=download_url, download_url_status=self.audio_link_tester.test(download_url, request_overrides),
                     raw_data={'search': search_result, 'download': {}, 'lyric': {}}, lyric='NULL', duration_s=search_result['raw'].get('duration', 0), 
-                    duration=seconds2hms(search_result['raw'].get('duration', 0)), file_size='NULL', ext=download_url.split('.')[-1].split('?')[0],
+                    duration=seconds2hms(search_result['raw'].get('duration', 0)), file_size='NULL', ext=download_url.split('?')[0].split('.')[-1],
                     song_name=legalizestring(search_result['raw'].get('title', 'NULL'), replace_null_string='NULL'), 
                     singers=legalizestring(search_result['raw'].get('nickname', 'NULL'), replace_null_string='NULL'), 
                     album=legalizestring(search_result['raw'].get('album_title', 'NULL'), replace_null_string='NULL'),
@@ -150,7 +150,7 @@ class XimalayaMusicClient(BaseMusicClient):
                         source=self.source, download_url=download_url, download_url_status=self.audio_link_tester.test(download_url, request_overrides),
                         raw_data={'search': search_result, 'download': download_result, 'lyric': {}}, lyric='NULL', duration_s=track_info.get('duration', 0), 
                         duration=seconds2hms(track_info.get('duration', 0)), file_size_bytes=encrypted_url.get('fileSize', 0), file_size=byte2mb(encrypted_url.get('fileSize', 0)),
-                        ext=download_url.split('.')[-1].split('?')[0], identifier=track_id, song_name=legalizestring(search_result.get('title', 'NULL'), replace_null_string='NULL'), 
+                        ext=download_url.split('?')[0].split('.')[-1], identifier=track_id, song_name=legalizestring(search_result.get('title', 'NULL'), replace_null_string='NULL'), 
                         singers=legalizestring(search_result.get('nickname', 'NULL'), replace_null_string='NULL'), 
                         album=legalizestring(safeextractfromdict(search_result, ['albumInfo', 'title'], ''), replace_null_string='NULL'), 
                     )
