@@ -1,5 +1,7 @@
 # Release Log
 
+- 2026-01-22: Released musicdl v2.8.7 — refactor the code for three music platforms (*i.e.*, YouTube, Joox, and Jamendo) to retrieve higher-quality audio from each platform.
+
 - 2026-01-21: Released musicdl v2.8.6 — refactor the currently supported unofficial download sites to return more standardized song information.
 
 - 2026-01-19: Released musicdl v2.8.5 — refactored four cross-platform search sources to speed up song cover and metadata extraction via the musicdl API, revamped the terminal UI, and fixed several potential bugs.
