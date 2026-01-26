@@ -7,9 +7,10 @@ WeChat Official Account (微信公众号):
     Charles的皮卡丘
 '''
 import copy
+from urllib.parse import urlsplit
 from .base import BaseMusicClient
 from rich.progress import Progress
-from ..utils import resp2json, seconds2hms, legalizestring, safeextractfromdict, usesearchheaderscookies, extractdurationsecondsfromlrc, cleanlrc, SongInfo
+from ..utils import resp2json, seconds2hms, legalizestring, safeextractfromdict, usesearchheaderscookies, extractdurationsecondsfromlrc, cleanlrc, SongInfo, LanZouYParser
 
 
 '''ZhuolinMusicClient'''
@@ -60,17 +61,18 @@ class ZhuolinMusicClient(BaseMusicClient):
             for search_result in search_results:
                 # --download results
                 if not isinstance(search_result, dict) or ('id' not in search_result): continue
-                download_url = safeextractfromdict(search_result, ['url'], "")
-                if not download_url: continue
+                download_url: str = safeextractfromdict(search_result, ['url'], "")
+                if 'lanzouy.com' in urlsplit(download_url).hostname: download_result, download_url = LanZouYParser.parsefromurl(download_url)
+                else: download_result = {}
+                if (not download_url) or (not download_url.startswith('http')): continue
                 song_info = SongInfo(
-                    raw_data={'search': search_result, 'download': {}, 'lyric': {}}, source=self.source, song_name=legalizestring(safeextractfromdict(search_result, ['name'], None)),
+                    raw_data={'search': search_result, 'download': download_result, 'lyric': {}}, source=self.source, song_name=legalizestring(safeextractfromdict(search_result, ['name'], None)),
                     singers=legalizestring(', '.join(safeextractfromdict(search_result, ['artist'], []) or [])), album=legalizestring(safeextractfromdict(search_result, ['album', 'name'], None)),
-                    ext='mp3', file_size='NULL', identifier=search_result['id'], duration='-:-:-', lyric=None, cover_url=safeextractfromdict(search_result, ['pic'], None), download_url=download_url,
-                    download_url_status=self.audio_link_tester.test(download_url, request_overrides),
+                    ext=download_url.split('?')[0].split('.')[-1], file_size=None, identifier=search_result['id'], duration='-:-:-', lyric=None, cover_url=safeextractfromdict(search_result, ['pic'], None), 
+                    download_url=download_url, download_url_status=self.audio_link_tester.test(download_url, request_overrides),
                 )
                 song_info.download_url_status['probe_status'] = self.audio_link_tester.probe(song_info.download_url, request_overrides)
                 song_info.file_size = song_info.download_url_status['probe_status']['file_size']
-                song_info.ext = song_info.download_url_status['probe_status']['ext'] if (song_info.download_url_status['probe_status']['ext'] and song_info.download_url_status['probe_status']['ext'] != 'NULL') else song_info.ext
                 if not song_info.with_valid_download_url: continue
                 # --lyric results
                 try:
