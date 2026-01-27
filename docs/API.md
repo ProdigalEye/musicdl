@@ -8,7 +8,7 @@ A unified interface encapsulated for all supported music platforms. Arguments su
 - **music_sources** (`list[str]`, optional):  A list of music client names to be enabled. 
   Each name must be a key registered in `MusicClientBuilder.REGISTERED_MODULES`.  
   If left empty, the following default sources are used:  
-  `['MiguMusicClient', 'NeteaseMusicClient', 'QQMusicClient', 'KugouMusicClient', 'KuwoMusicClient', 'QianqianMusicClient']`.
+  `['MiguMusicClient', 'NeteaseMusicClient', 'QQMusicClient', 'KuwoMusicClient', 'QianqianMusicClient']`.
 
 - **init_music_clients_cfg** (`dict[str, dict]`, optional): Per-client initialization configuration.  
   The outer dict is keyed by music source name (*e.g.*, `"NeteaseMusicClient"`), and each value is a dict that overrides the default config:
