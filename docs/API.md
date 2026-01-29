@@ -139,6 +139,7 @@ Thread settings and request overrides are automatically taken from `MusicClient.
 - `musicdl.modules.sources.YouTubeMusicClient`
 - `musicdl.modules.sources.ZhuolinMusicClient`
 - `musicdl.modules.common.GDStudioMusicClient`
+- `musicdl.modules.common.JBSouMusicClient`
 - `musicdl.modules.common.MP3JuiceMusicClient`
 - `musicdl.modules.common.MyFreeMP3MusicClient`
 - `musicdl.modules.common.TuneHubMusicClient`

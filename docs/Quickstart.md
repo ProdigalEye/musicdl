@@ -482,7 +482,7 @@ from musicdl import musicdl
 
 # allowed_music_sources can be set to any subset (i.e., any combination) of ['spotify', 'tencent', 'netease', 'kuwo', 'tidal', 'qobuz', 'joox', 'bilibili', 'apple', 'ytmusic']
 init_music_clients_cfg = {'GDStudioMusicClient': {'search_size_per_source': 5, 'allowed_music_sources': ['spotify', 'qobuz', 'tidal', 'apple']}}
-music_client = musicdl.MusicClient(music_sources=['GDStudioMusicClient'], init_music_clients_cfg=init_music_clients_cfg, clients_threadings=clients_threadings)
+music_client = musicdl.MusicClient(music_sources=['GDStudioMusicClient'], init_music_clients_cfg=init_music_clients_cfg)
 music_client.startcmdui()
 ```
 
@@ -524,6 +524,39 @@ The screenshot of the running result is as follows:
 <div align="center">
   <div>
     <img src="https://github.com/CharlesPikachu/musicdl/raw/master/docs/screenshot/tunehubscreenshot.png" width="600"/>
+  </div>
+</div>
+<br />
+
+#### JBSou Music Download
+
+`JBSouMusicClient`’s functionality is similar to `TuneHubMusicClient`’s. 
+Both are third-party APIs that consolidate music search and download functions from multiple platforms into a single interface.
+The key difference is that `JBSouMusicClient` focuses on searching and downloading 320 kbps MP3 audio files. 
+The list of music platforms it currently supports is as follows:
+
+| Source (EN)             | Source (CN)                        | Official Websites                     | `allowed_music_sources`      |
+| -----------------       | -------------------                | -----------------------------------   | -------------------          |
+| Tencent (QQ Music)      | QQ音乐                             | https://y.qq.com                      | `qq`                         |
+| NetEase Cloud Music     | 网易云音乐                         | https://music.163.com                 | `netease`                    |
+| Kuwo                    | 酷我音乐                           | https://www.kuwo.cn                   | `kuwo`                       |
+| Kugou                   | 酷狗音乐                           | https://www.kugou.com/                | `kugou`                      |
+
+More specifically, its invocation is as follows,
+
+```python
+from musicdl import musicdl
+
+init_music_clients_cfg = {'JBSouMusicClient': {'search_size_per_source': 5, 'allowed_music_sources': ['qq', 'netease', 'kuwo', 'kugou']}}
+music_client = musicdl.MusicClient(music_sources=['JBSouMusicClient'], init_music_clients_cfg=init_music_clients_cfg)
+music_client.startcmdui()
+```
+
+The screenshot of the running result is as follows:
+
+<div align="center">
+  <div>
+    <img src="https://github.com/CharlesPikachu/musicdl/raw/master/docs/screenshot/jbsouscreenshot.png" width="600"/>
   </div>
 </div>
 <br />
