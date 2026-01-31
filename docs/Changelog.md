@@ -1,6 +1,6 @@
 # Release Log
 
-- 2026-01-31: Released musicdl v2.8.12 — refactored the terminal table rendering algorithm to better accommodate support for FM-type platforms; fixed the KuGou lossless-audio API; added a new YouTube parsing endpoint.
+- 2026-01-31: Released musicdl v2.8.12 — refactored the terminal table rendering algorithm to better accommodate support for giant table; fixed kugou lossless api; added a new YouTube parsing endpoint.
 
 - 2026-01-30: Released musicdl v2.8.11 — added or enhanced search and download support for Ximalaya, Lizhi FM, and Qingting FM; fixed several known bugs.
 
