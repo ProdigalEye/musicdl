@@ -203,6 +203,19 @@ from musicdl.modules import MusicClientBuilder
 print(MusicClientBuilder.REGISTERED_MODULES)
 ```
 
+#### Download Playlist Items
+
+From musicdl v2.9.0 onward, support for downloading user playlists from each platform will be added gradually. The platforms currently supported are as follows:
+
+- [NeteaseMusicClient | 网易云音乐](https://music.163.com/)
+- [QQMusicClient | QQ音乐](https://y.qq.com/)
+
+Specifically, you only need to run the following command in the terminal, musicdl will automatically detect the playlist in the link and download it in batch:
+
+```
+musicdl -p "https://music.163.com/#/playlist?id=331841455"
+```
+
 #### WhisperLRC
 
 On some music platforms, it’s not possible to obtain the lyric files corresponding to the audio, *e.g*, `XimalayaMusicClient` and `MituMusicClient`. 
@@ -443,6 +456,35 @@ A simple example of searching for and downloading music from `YouTubeMusicClient
 from musicdl import musicdl
 
 music_client = musicdl.MusicClient(music_sources=['YouTubeMusicClient'])
+music_client.startcmdui()
+```
+
+#### SoundCloud Music Download
+
+musicdl lets you search for and download your favorite songs from SoundCloud. Specifically, you only need to run the following command:
+
+```
+musicdl -m SoundCloudMusicClient
+```
+
+Or you can invoke it with the following code:
+
+```python
+from musicdl import musicdl
+
+music_client = musicdl.MusicClient(music_sources=['SoundCloudMusicClient'])
+music_client.startcmdui()
+```
+
+The only thing to note is that `SoundCloudMusicClient` handles login cookies for downloading subscriber-only tracks slightly differently from the other music clients. 
+You’ll need to follow [SoundCloud’s official instructions](https://developers.soundcloud.com/docs#authentication) to obtain an Authorization Code, then fill it in as follows:
+
+```python
+from musicdl import musicdl
+
+cookies = {'oauth_token': 'Your Authorization Code'}
+init_music_clients_cfg = {'SoundCloudMusicClient': {'default_search_cookies': cookies, 'default_download_cookies': cookies, 'search_size_per_source': 5}}
+music_client = musicdl.MusicClient(music_sources=['SoundCloudMusicClient'], init_music_clients_cfg=init_music_clients_cfg)
 music_client.startcmdui()
 ```
 
