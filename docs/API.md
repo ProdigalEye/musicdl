@@ -131,6 +131,7 @@ Thread settings and request overrides are automatically taken from `MusicClient.
 - `musicdl.modules.sources.QianqianMusicClient`
 - `musicdl.modules.sources.QQMusicClient`
 - `musicdl.modules.sources.SodaMusicClient`
+- `musicdl.modules.sources.StreetVoiceMusicClient`
 - `musicdl.modules.sources.SoundCloudMusicClient`
 - `musicdl.modules.sources.TIDALMusicClient`
 - `musicdl.modules.sources.TwoT58MusicClient`
@@ -143,6 +144,7 @@ Thread settings and request overrides are automatically taken from `MusicClient.
 - `musicdl.modules.common.MyFreeMP3MusicClient`
 - `musicdl.modules.common.TuneHubMusicClient`
 - `musicdl.modules.audiobooks.LizhiMusicClient`
+- `musicdl.modules.audiobooks.QingtingMusicClient`
 - `musicdl.modules.audiobooks.XimalayaMusicClient`
 
 End users usually **do not** instantiate `BaseMusicClient` directly, but instead use one of the specific clients above.
