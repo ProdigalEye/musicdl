@@ -27,6 +27,7 @@ A unified interface encapsulated for all supported music platforms. Arguments su
       "freeproxy_settings": None,
       "default_search_cookies": {},
       "default_download_cookies": {},
+      "default_parse_cookies": {},
       "type": music_source,
       "search_size_per_page": 10,
       "strict_limit_search_size_per_page": True,
@@ -193,6 +194,9 @@ Arguments supported when initializing this class include:
 
 - **default_download_cookies** (`dict` or `None`, default `{}`):  
   Default cookies used for `BaseMusicClient.download` requests.
+
+- **default_parse_cookies** (`dict` or `None`, default `{}`):  
+  Default cookies used for `BaseMusicClient.parseplaylist` requests.
 
 - **search_size_per_page** (`int`, default `10`):  
   When searching for songs, if `search_size_per_source` is greater than `search_size_per_page`, 
