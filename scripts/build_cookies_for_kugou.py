@@ -47,6 +47,9 @@ def buildkugoucookies():
         check = loginqrcheck(qr_key)
         if safeextractfromdict(check, ['data', 'status'], None) == 4: break
         time.sleep(2)
+    # register device
+    KugouMusicClientUtils.registerdevice(session, cookies)
+    # return
     return cookies
 
 
