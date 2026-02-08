@@ -63,11 +63,11 @@ This method:
 - Calls `MusicClient.search()` to retrieve search results from all configured music sources.
 - Displays a formatted table of candidate songs with IDs.
 - Opens a cursor-based selection UI where the user can choose one or multiple songs:
-  - Use ↑/↓ to move the cursor
-  - Press Space to toggle selection
-  - Press a to select all, i to invert selection
-  - Press Enter to confirm and start downloading
-  - Press Esc or q to cancel selection
+  - Use "↑/↓" to move the cursor
+  - Press "Space" to toggle selection
+  - Press "a" to select all, "i" to invert selection
+  - Press "Enter" to confirm and start downloading
+  - Press "Esc" or "q" to cancel selection
 - Collects the corresponding song info entries and calls `MusicClient.download()` to download them.
 
 Special commands (at the main prompt):
