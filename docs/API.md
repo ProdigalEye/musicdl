@@ -58,17 +58,17 @@ Start an interactive command-line interface for searching and downloading music.
 
 This method:
 
-1. Prints basic usage information (version, save paths, *etc.*.).
-2. Prompts the user to input keywords for music search.
-3. Calls `MusicClient.search()` to retrieve search results from all configured music sources.
-4. Displays a formatted table of candidate songs with IDs.
-5. Opens a cursor-based selection UI where the user can choose one or multiple songs:
+- Prints basic usage information (version, save paths, *etc.*.).
+- Prompts the user to input keywords for music search.
+- Calls `MusicClient.search()` to retrieve search results from all configured music sources.
+- Displays a formatted table of candidate songs with IDs.
+- Opens a cursor-based selection UI where the user can choose one or multiple songs:
   - Use ↑/↓ to move the cursor
   - Press Space to toggle selection
   - Press a to select all, i to invert selection
   - Press Enter to confirm and start downloading
   - Press Esc or q to cancel selection
-6. Collects the corresponding song info entries and calls `MusicClient.download()` to download them.
+- Collects the corresponding song info entries and calls `MusicClient.download()` to download them.
 
 Special commands (at the main prompt):
 
