@@ -13,7 +13,7 @@ from modules.utils.tidalutils import TidalTvSession
 def buildtidalcookies():
     cli = TidalTvSession()
     cli.auth()
-    return cli.getstorage()
+    return cli.getstorage().tojson()
 
 
 '''tests'''
